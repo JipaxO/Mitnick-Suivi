@@ -1,0 +1,9 @@
+**Exercises**
+
+1. On your student machine what is the value of the FLAG environment variable ?
+
+> FLAG : BC{EXPORT_B4SH_FLAG}
+
+2. Currently if you notice your machine, the variable you have created will be deleted. What should you do to make your variable persistent? (With a Bash shell).
+
+> Commands :  export VARIABLE=”variable”
