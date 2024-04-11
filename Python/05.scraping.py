@@ -1,4 +1,8 @@
-filename = "./data/assets/data.xml"
-file = open(filename, "r")
-print(file.read())
-file.close()
+from lxml import etree
+
+filename = "./data/scraping/data.xml"
+
+tree = etree.parse(filename)
+
+for user in tree.xpath("/users/user[job='Veterinary']/name"):
+    print(user.text)
