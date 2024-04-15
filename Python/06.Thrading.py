@@ -7,4 +7,4 @@ class Sheakspears(Thread):
         self.name = name
 
     def run(self):
-        sonnets = []
+        sonnets = 
