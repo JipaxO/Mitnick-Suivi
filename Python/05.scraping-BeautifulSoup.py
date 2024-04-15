@@ -2,7 +2,6 @@ import requests
 import pandas as pd
 import time
 from bs4 import BeautifulSoup
-
 url = "http://www.allocine.fr/"
 r = requests.get(url)
 print(url, r.status_code)
