@@ -22,19 +22,25 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
-url = "https://www.leboncoin.fr/tablettes_liseuses/2639173877.htm"
+import requests
 
-driver = webdriver.Firefox()
-driver.implicitly_wait(30)
-driver.get(url)
+key = "73bbb95f8ecb49b499113a46481b4af1"
+url = "https://newsapi.org/v2/top-headlines?sources=lequipe&apiKey=" + key
+response = requests.get(url)
 
-python_button = driver.find_elements_by_xpath('//div[@data-reactid="269"]')[0]
-python_button.click()
+# Here the response format is a json file, it is used as a dictionary
+print(response.json())
+dictionnary = response.json()
+print(dictionnary.keys())
+for element in list(dictionnary.keys()):
+    print("##############################################")
+    print("Key: ", element, "// Values: ", dictionnary[element])
+# And now we have lists in dictionaries(it's a JSON file actually but it's very similar)
+# We will discover the information of the article key.
 
-# And then we use Beautiful soup
-soup = BeautifulSoup(driver.page_source)
-
-driver.close()
-
-for elem in soup.find_all("a", attrs={"data-qa-id": "adview_number_phone_contact"}):
-    print(elem.text)
+for element in enumerate(dictionnary["articles"]):
+    print("###############################################")
+    print(element)
+# So if we keep going, it gives us another dictionary!
+for element in dictionnary["articles"][0].keys():
+    print(" Key : ", element, "Values : ", dictionnary["articles"][0][element])
