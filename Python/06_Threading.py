@@ -37,7 +37,7 @@ file_queue = Queue()
 for filename in txt_files:
     file_queue.put(filename)
 
-num_threads = 4  # Nombre de threads à utiliser
+num_threads = 4
 threads = []
 for _ in range(num_threads):
     thread = threading.Thread(target=thread_function)
