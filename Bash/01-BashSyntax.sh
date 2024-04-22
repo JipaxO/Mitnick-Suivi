@@ -12,25 +12,20 @@ echo "Hello $name"
 
 # III - path to
 
-path="/home/adrien/Documents"
+path="/home/adrien/Github"
 
-# Vérifier si l'argument est fourni
 if [ -z "$path" ]; then
     echo "Erreur : Veuillez fournir un chemin en argument."
     exit 1
 fi
 
-# Vérifier si le chemin existe
 if [ ! -e "$path" ]; then
     echo "Erreur : Le chemin '$path' n'existe pas."
     exit 1
 fi
 
-# Vérifier si le chemin est un fichier
 if [ -f "$path" ]; then
-    # Vérifier s'il s'agit d'un fichier texte
     if [ "$(file --mime-type -b "$path" | cut -d'/' -f1)" = "text" ]; then
-        echo "Contenu du fichier '$path' :"
         cat "$path"
     else
         echo "Erreur : '$path' n'est pas un fichier texte."
@@ -38,9 +33,19 @@ if [ -f "$path" ]; then
     fi
 fi
 
-# Vérifier si le chemin est un répertoire
 if [ -d "$path" ]; then
     echo "Contenu du répertoire '$path' :"
-    # Liste uniquement les fichiers texte
-    find "$path" -type f \( -iname "*.txt" -o -iname "*.js" \) -exec cat {} \;
+    find "$path" -maxdepth 1 -type f \( -iname "*.txt" \) -exec cat {} +
 fi
+
+# IV - information
+
+echo "user: $USER Date: $(date) Directory: $PWD"
+
+# V - list of groups
+
+echo "Entrez le nom d'utilisateur : \c"
+read -r username
+
+echo "L'utilisateur '$username' fait partie des groupes suivants :"
+groups "$username" | tr ' ' '\n' | sed "s/^/$username fait partie du groupe /"
