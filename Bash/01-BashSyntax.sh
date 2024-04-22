@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/usr/bin/env sh
 # I - prompt user
 
 echo "Hello $USER"
