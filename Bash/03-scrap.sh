@@ -2,7 +2,7 @@
 
 curl -s "https://webscraper.io/test-sites/e-commerce/allinone/computers/laptops" >laptops.html
 
-awk '/<div class="product-wrapper card-body">.*?</div>/' laptops.html |
+awk '/<div[^>]* class="product-wrapper card-body">.*<\/div>/' laptops.html |
     while IFS= read -r laptop; do
 
         echo "$laptop"
