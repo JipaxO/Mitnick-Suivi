@@ -20,7 +20,7 @@ services:
       - PMA_PORT=3306
     depends_on:
       - phpapache
-      - mysql
+      - mysqlw
 
   mysql:
     image: mysql:latest
