@@ -1,13 +1,15 @@
 services:
 
-  phpApache:
-    image: php:8.2-apache
+  phpapache:
+    build:
+      context: ./dockerfiles
+      dockerfile: dockerfile_apachephp
     ports:
       - 80:80
     volumes:
       - ./app:/var/www/html
-    depends_on:
-      - mysql
+      - ./config/php_conf/php.ini:/usr/local/etc/php/php.ini
+      - ./config/apache_conf/apache2.conf:/etc/apache2/apache2.conf
 
   phpMyAdmin:
     image: phpmyadmin:latest
@@ -16,6 +18,9 @@ services:
     environment:
       - PMA_HOST=mysql
       - PMA_PORT=3306
+    depends_on:
+      - phpapache
+      - mysql
 
   mysql:
     image: mysql:latest
