@@ -1,3 +1,4 @@
+
 CREATE TABLE persona ( 
     id INT NOT NULL AUTO_INCREMENT,
     name varchar(50) NOT NULL,
@@ -6,5 +7,3 @@ CREATE TABLE persona (
     life VARCHAR(255),
     PRIMARY KEY (id)
 )
-
-SELECT * from persona
