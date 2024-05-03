@@ -1,12 +1,8 @@
-CREATE DATABASE Exos;
-
-USE Exos;
-
 CREATE TABLE persona ( 
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     name varchar(50) NOT NULL,
     age INT,
-    artist INT,
+    artist VARCHAR(50),
     life VARCHAR(255),
     PRIMARY KEY (id)
 )

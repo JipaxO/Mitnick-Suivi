@@ -1,5 +1,4 @@
 services:
-
   phpapache:
     build:
       context: ./dockerfiles
@@ -7,7 +6,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./app:/var/www/html
+      - ./src:/var/www/html
       - ./config/php_conf/php.ini:/usr/local/etc/php/php.ini
       - ./config/apache_conf/apache2.conf:/etc/apache2/apache2.conf
 
@@ -26,7 +25,7 @@ services:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: root
-    volumes: 
+    volumes:
       - ./mysql:/var/lib/mysql
     ports:
       - 3306:3306
