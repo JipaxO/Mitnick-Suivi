@@ -1,3 +1,6 @@
+CREATE DATABASE Exos;
+
+USE Exos;
 
 CREATE TABLE persona ( 
     id INT NOT NULL AUTO_INCREMENT,
