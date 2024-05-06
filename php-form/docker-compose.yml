@@ -1,0 +1,12 @@
+services:
+  phpapache:
+    build:
+      context: .
+      dockerfile: dockerfile_phpapache
+    container_name: phpapache
+    ports:
+      - "80:80"
+    volumes:
+        - .:/var/www/html
+        - ./config/php-form.ini:/usr/local/etc/php-form/php-form.ini
+        - ./config/apache.conf:/etc/apache2/sites-available/000-default.conf
