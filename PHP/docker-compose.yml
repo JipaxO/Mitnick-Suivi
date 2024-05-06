@@ -1,4 +1,5 @@
 services:
+
   phpapache:
     build:
       context: ./dockerfiles
@@ -6,7 +7,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./src:/var/www/html
+      - ./app:/var/www/html
       - ./config/php_conf/php.ini:/usr/local/etc/php/php.ini
       - ./config/apache_conf/apache2.conf:/etc/apache2/apache2.conf
 

@@ -3,10 +3,10 @@ CREATE DATABASE Exos;
 USE Exos;
 
 CREATE TABLE persona ( 
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL,
     name varchar(50) NOT NULL,
     age INT,
-    artist VARCHAR(50),
+    artist INT,
     life VARCHAR(255),
     PRIMARY KEY (id)
 )
