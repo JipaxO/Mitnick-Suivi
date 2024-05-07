@@ -26,6 +26,7 @@ $typeFields = [
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     foreach ($typeFields as $field => $type) {
+
         if (isset($_POST[$field])) {
             // Sanitize
             $sanitized = htmlspecialchars($_POST[$field], ENT_QUOTES, 'UTF-8');
@@ -42,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
             elseif ($type == 'email'){
-                ${$field} = filter_var($sanitized, FILTER_VALIDATE_EMAIL);
+                ${$field} = filter_var($sanitized,FILTER_SANITIZE_EMAIL, FILTER_VALIDATE_EMAIL);
                 if (${$field} === false) {
                     echo "Invalid request: $field is not a valid email";
                     break;
@@ -59,8 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             echo "Invalid request: $field is not set";
-            sleep(5);
-            header('location: index.html');
         }
     }
 }
