@@ -35,6 +35,7 @@ try {
         foreach ($typeFields as $field => $type) {
 
             if (isset($_POST[$field])) {
+
                 // Sanitize
                 $sanitized = htmlspecialchars($_POST[$field], ENT_QUOTES, 'UTF-8');
 
@@ -44,6 +45,7 @@ try {
                     if (empty($sanitized)) {
                         $errors[] = "Invalid request: $field is empty";
                         break;
+
                     } else {
                         ${$field} = $sanitized;
                         $validateData[$field] = ${$field};
