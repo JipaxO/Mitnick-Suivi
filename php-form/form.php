@@ -26,7 +26,7 @@ $typeFields = [
 ];
 
 $validateData = [];
-$errors =[];
+$errors = [];
 
 try {
 
@@ -88,7 +88,7 @@ try {
                         if (!array_key_exists($extention, $allowed)) {
                             $errors[] = "Invalid file type";
                         } else {
-                            $maxsize = 5 * 1024 * 1024; // 5 MO
+                            $maxsize = 2 * 1024 * 1024; // 2 MO
 
                             if ($filesize > $maxsize) {
                                 $errors[] = "File size is too large";
@@ -112,8 +112,10 @@ try {
         }
 
         if (empty($errors)) {
-            echo "Validation successful. Here your data: ";
-            print_r($validateData);
+            echo "Validation successful. Here your data: <br>";
+            foreach ($validateData as $key => $value) {
+                echo $key . " : " . $value . "<br>";
+            }
         } else {
             echo "Validation failed with the following errors: ";
             print_r($errors);
