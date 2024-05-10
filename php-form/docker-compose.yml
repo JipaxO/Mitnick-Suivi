@@ -1,3 +1,4 @@
+version: "3.7"
 services:
   
   phpapache:
@@ -8,6 +9,27 @@ services:
     ports:
       - "80:80"
     volumes:
-        - .:/var/www/html
-        - ./config/php-form.ini:/usr/local/etc/php-form/php-form.ini
-        - ./config/apache.conf:/etc/apache2/sites-available/000-default.conf
+      - .:/var/www/html
+      - ./config/php.ini:/usr/local/etc/php-form/php-form.ini
+      - ./config/apache.conf:/etc/apache2/sites-available/000-default.conf
+
+  phpMyAdmin:
+    image: phpmyadmin:latest
+    ports:
+      - "81:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+    depends_on:
+      - phpapache
+      - mysql
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+      - "33060:33060"

@@ -1,6 +1,6 @@
 <?php
 
-$typeFields = [
+$validateType = [
     'bdate' => 'date',
     'event' => 'string',
     'artist' => 'string',
@@ -25,108 +25,126 @@ $typeFields = [
     'fileToUpload' => 'file'
 ];
 
-$validateData = [];
-$errors = [];
+function sanitize(array $data): array
+{
+    $sanitizedData = [];
 
-try {
+    foreach ($data as $key => $value) {
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $sanitized = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 
-        foreach ($typeFields as $field => $type) {
+        if ($key === 'email')
+            $sanitized = filter_var($sanitized, FILTER_SANITIZE_EMAIL);
 
-            if (isset($_POST[$field])) {
-
-                // Sanitize
-                $sanitized = htmlspecialchars($_POST[$field], ENT_QUOTES, 'UTF-8');
-
-                // Validate
-
-                if ($type == 'string') {
-                    if (empty($sanitized)) {
-                        $errors[] = "Invalid request: $field is empty";
-                        break;
-
-                    } else {
-                        ${$field} = $sanitized;
-                        $validateData[$field] = ${$field};
-                    }
-
-                } elseif ($type == 'int') {
-                    ${$field} = filter_var($sanitized, FILTER_VALIDATE_INT);
-                    if (${$field} === false) {
-                        $errors[] = "Invalid request: $field is not a valid integer";
-                        break;
-                    }
-
-                } elseif ($type == 'email') {
-                    ${$field} = filter_var($sanitized, FILTER_SANITIZE_EMAIL);
-                    $validateData[$field] = ${$field};
-
-                    if (filter_var(${$field}, FILTER_VALIDATE_EMAIL) === false) {
-                        $errors[] = "Invalid request: $field is not a valid email";
-                        break;
-                    }
-
-                } elseif ($type == 'date') {
-                    $date = date('Y-m-d', strtotime($sanitized));
-                    if (!$date) {
-                        $errors[] = "Invalid request: $field is not a valid date";
-                        break;
-                    } else {
-                        ${$field} = $date;
-                        $validateData[$field] = ${$field};
-                    }
-
-                } else if ($type == 'file') {
-
-                    if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
-
-                        $allowed = array('jpg=>image/jpeg', 'jpeg=>image/jpeg', 'png=>image/png');
-                        $filename = $_FILES[$field]["name"];
-                        $filetype = $_FILES[$field]["type"];
-                        $filesize = $_FILES[$field]["size"];
-                        $extention = pathinfo($filename, PATHINFO_EXTENSION);
-
-                        if (!array_key_exists($extention, $allowed)) {
-                            $errors[] = "Invalid file type";
-                        } else {
-                            $maxsize = 2 * 1024 * 1024; // 2 MO
-
-                            if ($filesize > $maxsize) {
-                                $errors[] = "File size is too large";
-                            } else {
-                                if (in_array($filetype, $allowed)) {
-                                    ${$field} = $_FILES[$field];
-                                    $validateData[$field] = ${$field};
-                                } else {
-                                    $errors[] = "ERROR: There was a problem uploading your file. Please try again.";
-                                }
-                            }
-                        }
-                    }
+        if ($key === 'bdate')
+            $sanitized = date('Y-m-d', strtotime($sanitized));
 
 
-                } else {
-                    $errors[] = "invalid request: $field is no set";
-                    break;
-                }
+        $sanitizedData[$key] = $sanitized;
+    }
+
+    return $sanitizedData;
+}
+
+
+function validate(array $typeFields, array $data): array
+{
+    $validatedData = [];
+    $errors = [];
+
+    foreach ($typeFields as $field => $type) {
+
+        $value = $data[$field] ?? null;
+
+        if (empty($value) && $type != 'file')
+            $errors[] = "une entrée est requise pour " . $field;
+
+        else {
+            //mettre dans se else tout se qui doit être obligatoire a entré
+
+            if ($type === 'string' && $field != 'number') {
+
+                $validatedData[$field] = $value;
+
+            } elseif ($type === 'int') {
+
+                if (!filter_var($value, FILTER_VALIDATE_INT))
+                    $errors[] = "le champ " . $field . " doit être un nombre valide";
+                else
+                    $validatedData[$field] = $value;
+
+            } elseif ($type === 'email') {
+                if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+                    $errors[] = "le champ " . $field . " doit être un email valide";
+                else
+                    $validatedData[$field] = $value;
+
+
+            } elseif ($type === 'date') {
+
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) || $value > date('Y-m-d'))
+                    $errors[] = "le champ " . $field . " doit être une date valide";
+                else
+                    $validatedData[$field] = $value;
             }
+
+            elseif ($type === 'time') {
+
+                if (!preg_match('/^\d{2}:\d{2}$/', $value))
+                    $errors[] = "le champ " . $field . " doit être une heure valide";
+                else
+                    $validatedData[$field] = $value;
+            }
+
+            elseif ($field === "number") {
+
+                if (!preg_match('/^\+?\d+$/', $value))
+                    $errors[] = "le champ " . $field . " doit être un numéro valide";
+                else
+                    $validatedData[$field] = $value;
+
+            }
+
         }
 
-        if (empty($errors)) {
-            echo "Validation successful. Here your data: <br>";
-            foreach ($validateData as $key => $value) {
-                echo $key . " : " . $value . "<br>";
+        if ($type === 'file') {
+            if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
+                $allowed = array('jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png');
+                $filetype = $_FILES[$field]["type"];
+                $filesize = $_FILES[$field]["size"];
+                $maxSize = 2 * 1024 * 1024; //2MO
+
+                $check = getimagesize($_FILES[$field]["tmp_name"]);
+                if($check === false) {
+                    $errors[] = "Le fichier n'est pas une image.";
+                }
+
+                if (!in_array($filetype, $allowed))
+                    $errors[] = "le fichier doit être de type jpg, jpeg ou png";
+                elseif ($filesize > $maxSize)
+                    $errors[] = "le fichier doit être de taille inférieur à 2MO";
+                else
+                    $validatedData[$field] = $field;
             }
-        } else {
-            echo "Validation failed with the following errors: ";
-            print_r($errors);
         }
 
     }
-} catch
-(Exception $e) {
+    return [$validatedData, $errors];
+}
 
-    echo 'Exception: ', $e->getMessage(), "\n";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $sanitizedData = sanitize($_POST);
+    $validatedData = validate($validateType, $sanitizedData);
+
+    if (empty($validatedData[1])) {
+        echo "Tout est bon: ";
+        print_r($validatedData[0]);
+    } else {
+        echo "Erreur: ";
+        print_r($validatedData[1]);
+    }
+
 
 }
